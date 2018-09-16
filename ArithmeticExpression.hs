@@ -1,6 +1,7 @@
 module ArithmeticExpression where
 
 import TNum
+import TNumParser
 
 data AExpr
   = Variable String

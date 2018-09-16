@@ -22,6 +22,11 @@ symbol s = L.symbol sc s
 parens :: Parser a -> Parser a
 parens = between (symbol "(") (symbol ")")
 
+identifier :: Parser String
+identifier = lexeme p
+  where
+      p = (:) <$> letterChar <*> many alphaNumChar
+
 integer :: Parser Integer
 integer = lexeme L.decimal
 
