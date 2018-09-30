@@ -1,11 +1,11 @@
-module ComputorState
+module Types.ComputorState
   ( ComputorState(..)
   , initialState
   , getNumVariable
   , setNumVariable
   ) where
 
-import TNum
+import Types.TNum
 import qualified Data.Map as M
 
 data ComputorState = ComputorState

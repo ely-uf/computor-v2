@@ -1,11 +1,11 @@
-module VariableParser
+module Parsers.VariableParser
   ( VariableAssignment(..)
   , parseVariableAssignment
   ) where
 
-import TNum
-import TNumParser
-import GenericParsers
+import Types.TNum
+import Parsers.TNumParser
+import Parsers.GenericParsers
 import Text.Megaparsec
 
 data VariableAssignment = VariableAssignment

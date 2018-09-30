@@ -1,4 +1,4 @@
-module GenericParsers where
+module Parsers.GenericParsers where
 
 import Data.Void
 import Data.Char (isDigit)

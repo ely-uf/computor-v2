@@ -1,7 +1,7 @@
-module TNumParser (parseTNum) where
+module Parsers.TNumParser (parseTNum) where
 
-import TNum
-import GenericParsers
+import Types.TNum
+import Parsers.GenericParsers
 import Control.Monad.Combinators
 import Text.Megaparsec.Char
 import Text.Megaparsec

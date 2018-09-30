@@ -1,6 +1,4 @@
-{-# LANGUAGE ExistentialQuantification #-}
-
-module TNum where
+module Types.TNum where
 
 data TNum
   = TInteger Integer

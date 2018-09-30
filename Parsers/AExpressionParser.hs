@@ -1,10 +1,10 @@
-module AExpressionParser (parseAExpression) where
+module Parsers.AExpressionParser (parseAExpression) where
 
-import TNum
-import TNumParser
-import GenericParsers
+import Types.TNum
+import Parsers.TNumParser
+import Parsers.GenericParsers
 import Text.Megaparsec
-import ArithmeticExpression
+import Types.ArithmeticExpression
 import Control.Monad.Combinators.Expr
 
 aOperators :: [[Operator Parser AExpr]]
