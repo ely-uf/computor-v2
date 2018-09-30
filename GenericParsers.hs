@@ -28,13 +28,18 @@ identifier = lexeme p
       p = (:) <$> letterChar <*> many alphaNumChar
 
 integer :: Parser Integer
-integer = lexeme L.decimal
+integer = lexeme $ do
+  sign <- option "" (symbol "-")
+  num <- L.decimal
+  if sign == "-" then
+    return $ negate num
+  else
+    return num
 
 double :: Parser Double
-double = (try double') <|> (fromIntegral <$> integer)
-  where
-    double' = do
-      integral <- takeWhile1P Nothing isDigit
-      char '.'
-      fractional <- takeWhile1P Nothing isDigit
-      return $ read (integral ++ '.':fractional)
+double = do
+  sign <- option "" (symbol "-")
+  integral <- takeWhile1P Nothing isDigit
+  char '.'
+  fractional <- takeWhile1P Nothing isDigit
+  return $ read (sign ++ integral ++ '.':fractional)

@@ -2,18 +2,15 @@ module TNumParser (parseTNum) where
 
 import TNum
 import GenericParsers
-import Text.Megaparsec
+import Control.Monad.Combinators
 import Text.Megaparsec.Char
+import Text.Megaparsec
 
 parseComplex :: Parser TNum
 parseComplex = do
-  realPart <- option 0.0 (lexeme double)
-  c <- (try $ symbol "+") <|> symbol "-"
-  imaginaryPart <- option 1.0 (lexeme double <* optional (lexeme $ char '*'))
+  imaginaryPart <- option 1.0 $ try $ (lexeme double) <* optional (symbol "*")
   lexeme $ char 'i'
-  case c of
-    "-" -> return (TComplex realPart (negate imaginaryPart))
-    _   -> return (TComplex realPart imaginaryPart)
+  return $ TComplex 0.0 imaginaryPart
 
 parseTNum :: Parser TNum
-parseTNum =  (try $ TDouble <$> double) <|> parseComplex
+parseTNum = (try parseComplex) <|> (try $ TDouble <$> double) <|> (TInteger <$> integer)
