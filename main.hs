@@ -3,13 +3,12 @@ module Main where
 import Text.Megaparsec
 import Text.Megaparsec.Error
 import Parsers.AExpressionParser
-import Parsers.VariableParser
+import Parsers.VariableAssignmentParser
 import Parsers.GenericParsers
 
-import Types.ArithmeticExpression
+import Types
 import ArithmeticExpressionSolver
 
-import Types.ComputorState
 
 import Text.Megaparsec
 import Data.Bifunctor

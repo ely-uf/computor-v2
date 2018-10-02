@@ -5,7 +5,8 @@ LOCAL_SRC = ArithmeticExpressionSolver.hs
 PARSER_SRC = Parsers/GenericParsers.hs Parsers/TNumParser.hs \
 			 Parsers/AExpressionParser.hs Parsers/VariableParser.hs
 TYPES_SRC = Types/ArithmeticExpression.hs \
-			Types/ComputorState.hs Types/TNum.hs
+			Types/ComputorState.hs Types/TNum.hs \
+			Types/Value.hs Types/Function.hs
 
 AUX_SRC = $(LOCAL_SRC) $(PARSER_SRC) $(TYPES_SRC)
 
