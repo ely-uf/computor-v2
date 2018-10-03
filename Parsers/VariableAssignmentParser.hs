@@ -3,11 +3,11 @@ module Parsers.VariableAssignmentParser
   ) where
 
 import Types
+import Parsers.AExpressionParser
 import Parsers.GenericParsers
-import Parsers.FunctionParser
 
 parseVariableAssignment :: Parser VariableAssignment
-parseVariableAssignment = do
+parseVariableAssignment = lexeme $ do
   k <- identifier
   symbol "="
   v <- parseVArg

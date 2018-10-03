@@ -7,8 +7,10 @@ module Types
   , VArg(..)
   , FunctionError
   , Value(..)
+  , isValueTNum
+  , isValueFunction
   , TNum(..)
-  , VariableAssignment
+  , VariableAssignment(..)
   ) where
 
 import Data.List (find, intercalate)
@@ -24,7 +26,7 @@ data AExpr
   | Neg AExpr
   | BinaryExpr BinaryOperation AExpr AExpr
   | LambdaApplication Function [VArg]
-  | FunctionCall String [VArg]
+  | FunctionCall AExpr [VArg]
 
 data BinaryOperation
   = Add
@@ -40,7 +42,7 @@ instance Show AExpr where
   show (ConstVal a) = show a
   show (Neg a) = '-' : (show a)
   show (BinaryExpr op a1 a2) = '(' : (show a1) ++ " " ++ (show op) ++ " " ++ (show a2) ++ ")"
-  show (FunctionCall name args) = name ++ ('(': (intercalate ", " (map show args))) ++ ")"
+  show (FunctionCall name args) = (show name) ++ ('(': (intercalate ", " (map show args))) ++ ")"
   show (LambdaApplication fn args) = show fn ++ ('(': (intercalate ", " (map show args))) ++ ")"
 
 instance Show BinaryOperation where
@@ -71,9 +73,9 @@ data Function = Function
   }
 
 data VArg
-  = FAExpr AExpr
-  | FTNum TNum
-  | FFunc Function
+  = VArgAExpr AExpr
+  | VArgTNum TNum
+  | VArgFunc Function
 
 type FunctionError = String
 
@@ -86,15 +88,22 @@ instance Show Function where
                               Just (_, v) -> show v
 
 instance Show VArg where
-  show (FAExpr e) = show e
-  show (FTNum n) = show n
-  show (FFunc f) = show f
+  show (VArgAExpr e) = show e
+  show (VArgTNum n) = show n
+  show (VArgFunc f) = show f
 
 {-- Value --}
 
 data Value
   = VFunc Function
   | VNum  TNum
+
+isValueTNum :: Value -> Bool
+isValueTNum (VNum _) = True
+isValueTNum _ = False
+
+isValueFunction :: Value -> Bool
+isValueFunction = not . isValueTNum
 
 instance Show Value where
   show (VFunc f) = show f
