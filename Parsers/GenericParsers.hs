@@ -25,7 +25,11 @@ parens = between (symbol "(") (symbol ")")
 identifier :: Parser String
 identifier = lexeme p
   where
-      p = (:) <$> letterChar <*> many alphaNumChar
+      p = (:) <$> letterChar <*> many alphaNumChar >>= check
+      check var = if var == "i" then
+                    fail $ "'i' is a reserved keyword."
+                  else
+                    return var
 
 integer :: Parser Integer
 integer = lexeme $ do

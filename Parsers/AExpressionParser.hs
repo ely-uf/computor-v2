@@ -72,8 +72,8 @@ aOperators =
 aTerm :: Parser AExpr
 aTerm = lexeme $ (try $ parens parseAExpression)
   <|> (try parseFunctionCall)
-  <|> ConstVal <$> (try parseTNum)
   <|> Variable <$> identifier
+  <|> ConstVal <$> (try parseTNum)
 
 parseAExpression :: Parser AExpr
 parseAExpression = makeExprParser aTerm aOperators
