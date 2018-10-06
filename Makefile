@@ -3,7 +3,7 @@ SRC = main.hs
 
 LOCAL_SRC = ArithmeticExpressionSolver.hs FunctionOperations.hs \
 			ComputorStateOperations.hs VariableAssignment.hs	\
-			Types.hs
+			Types.hs PredefinedFunctions.hs
 PARSER_SRC = Parsers/GenericParsers.hs Parsers/TNumParser.hs \
 			 Parsers/AExpressionParser.hs Parsers/VariableAssignmentParser.hs \
 			 Parsers/FunctionParser.hs

@@ -9,10 +9,18 @@ module ComputorStateOperations
   ) where
 
 import Types
+import PredefinedFunctions
 import qualified Data.Map as M
 
 initialState :: ComputorState
-initialState = ComputorState M.empty
+initialState = addPredefinedFunctions $ ComputorState M.empty
+
+addPredefinedFunctions :: ComputorState -> ComputorState
+addPredefinedFunctions = injectFunctions predefinedFunctions
+
+injectFunctions :: [(String, Function)] -> ComputorState -> ComputorState
+injectFunctions [] st = st
+injectFunctions ((name, fn):xs) st = injectFunctions xs (setFuncVariable name fn st)
 
 getVariable :: String -> ComputorState -> Maybe Value
 getVariable key = (M.lookup key) . variables
