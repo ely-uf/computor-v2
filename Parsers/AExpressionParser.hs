@@ -1,6 +1,7 @@
 module Parsers.AExpressionParser
   ( parseAExpression
   , parseFunctionCall
+  , parseFunctionDeclaration
   , parseVArg
   ) where
 
@@ -54,9 +55,9 @@ parseFunctionArgs :: Parser [VArg]
 parseFunctionArgs = lexeme . parens $ sepBy parseVArg (lexeme $ chunk ", ")
 
 parseVArg :: Parser VArg
-parseVArg = lexeme $ VArgFunc <$> parseAnonymousFunction
+parseVArg = lexeme $ VArgFunc <$> (try parseAnonymousFunction)
   <|> VArgAExpr <$> (try parseAExpression)
-  <|> VArgTNum  <$> (try parseTNum)
+  <|> VArgTNum  <$> parseTNum
 
 aOperators :: [[Operator Parser AExpr]]
 aOperators =

@@ -55,7 +55,7 @@ solveExpression (FunctionCall expr args) st = do
   res <-  solveExpression expr st
   case res of 
     (VFunc fn) -> solveExpression (LambdaApplication fn args) st
-    notFunc -> Left $ "TypeError: " ++ (show notFunc) ++ " is not a function."
+    notFunc -> Left $ "TypeError: " ++ (show notFunc) ++ " is not a function.\n"
 
 solveExpression (Variable a) st = case getVariable a st of
                                     Just n -> return n
@@ -70,7 +70,7 @@ unsafeExtractTNumFromValue _ = error "This is not an error. This is a bonus."
 
 typeCheckTNum :: Value -> Either ExpressionError TNum
 typeCheckTNum (VNum n) = return n
-typeCheckTNum v = Left $ "TypeError: Expected num, but received function " ++ show v
+typeCheckTNum v = Left $ "TypeError: Expected num, but received function " ++ show v ++ "\n"
 
 solveExpression' :: AExpr -> ComputorState -> Either ExpressionError TNum
 solveExpression' (ConstVal a) st = return a
@@ -82,8 +82,8 @@ solveExpression' e@(Neg a) st = case solveExpression a st of
 solveExpression' e@(BinaryExpr op a b) st = bimap (propagateArithmeticError e) id $ do
   a1 <- solveExpression a st
   b1 <- solveExpression b st
-  if | (not $ isValueTNum a1) -> fail $ "Type Error: The first argument (" ++ show a1 ++ ") of arithmetic expression " ++ show e ++ " is not a number."
-     | (not $ isValueTNum b1) -> fail $ "Type Error: The second argument (" ++ show b1 ++ ") of arithmetic expression " ++ show e ++ " is not a number."
+  if | (not $ isValueTNum a1) -> Left $ "Type Error: The first argument (" ++ show a1 ++ ") of arithmetic expression " ++ show e ++ " is not a number.\n"
+     | (not $ isValueTNum b1) -> Left $ "Type Error: The second argument (" ++ show b1 ++ ") of arithmetic expression " ++ show e ++ " is not a number.\n"
      | otherwise -> solveBinaryExpression (unsafeExtractTNumFromValue a1) (unsafeExtractTNumFromValue b1)
   where
     solveBinaryExpression a1 b1
