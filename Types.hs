@@ -85,7 +85,7 @@ instance Show Function where
     where substitutedArgs = map substitute _args
           substitute arg = case find ((== arg).fst) _appliedArgs of
                               Nothing     -> arg
-                              Just (_, v) -> show v
+                              Just (_, v) -> arg ++ ": " ++ show v
 
 instance Show VArg where
   show (VArgAExpr e) = show e

@@ -1,6 +1,7 @@
 module Main where
 
 import Text.Megaparsec
+import Text.Megaparsec.Char
 import Text.Megaparsec.Error
 import Parsers.AExpressionParser
 import Parsers.VariableAssignmentParser
@@ -11,7 +12,6 @@ import ArithmeticExpressionSolver
 import ComputorStateOperations
 import VariableAssignment
 
-import Text.Megaparsec
 import Data.Bifunctor
 import System.IO (hFlush, hIsEOF, stdout, stdin)
 import Control.Monad.State.Strict
@@ -24,9 +24,9 @@ data ComputorCommand
 
 parseComputorCommand :: Parser ComputorCommand
 parseComputorCommand
-  = (CAssignment <$> (try parseVariableAssignment))
+  =   (CAssignment <$> (try parseVariableAssignment))
   <|> (CAExpr <$> (try parseAExpression))
-  <|> ((symbol "") *> (return CNothing))
+  <|> (return CNothing)
 
 computorParser :: Parser ComputorCommand
 computorParser = between sc eof parseComputorCommand
@@ -45,7 +45,7 @@ executeCommand command = do
   where
     executeCommand' :: ComputorCommand -> ComputorState -> StateT ComputorState IO ()
     executeCommand' (CAExpr expr) state = either (liftIO . displayArithmeticError) (liftIO.print) $ solveExpression expr state
-    executeCommand' (CAssignment assignment) state = do --(either (liftIO.displayArithmeticError) put) . (assignVariable' assignment)
+    executeCommand' (CAssignment assignment) state = do
       case assignVariable' assignment state of
         Left error -> liftIO . displayArithmeticError $ error
         Right st -> put st
