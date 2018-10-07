@@ -12,9 +12,10 @@ import ArithmeticExpressionSolver
 import ComputorStateOperations
 import VariableAssignment
 
+import Control.Monad.State.Strict
 import Data.Bifunctor
 import System.IO (hFlush, hIsEOF, stdout, stdin)
-import Control.Monad.State.Strict
+import System.Exit (exitSuccess)
 
 data ComputorCommand
   = CAssignment VariableAssignment
@@ -38,19 +39,19 @@ formatArithmeticError = unlines . (map indentLog) . (zip [0 .. ]) . lines
 displayArithmeticError :: String -> IO ()
 displayArithmeticError = putStr . formatArithmeticError
 
-executeCommand :: ComputorCommand -> StateT ComputorState IO ()
+executeCommand :: ComputorCommand -> ComputorStateT IO ()
 executeCommand command = do
   st <- get
   executeCommand' command st
   where
-    executeCommand' :: ComputorCommand -> ComputorState -> StateT ComputorState IO ()
+    executeCommand' :: ComputorCommand -> ComputorState -> ComputorStateT IO ()
     executeCommand' (CAExpr expr) state = either (liftIO . displayArithmeticError) (liftIO.print) $ solveExpression expr state
     executeCommand' (CAssignment assignment) state = do
       case assignVariable' assignment state of
         Left error -> liftIO . displayArithmeticError $ error
         Right st -> put st
 
-interactiveConsole :: StateT ComputorState IO ()
+interactiveConsole :: ComputorStateT IO ()
 interactiveConsole = do
   i <- liftIO promptInput
   case parse computorParser "" i of
@@ -64,7 +65,7 @@ interactiveConsole = do
       hFlush stdout
       eof <- hIsEOF stdin
       if eof then
-        error "Goodbye!"
+        exitSuccess
       else
         getLine
 

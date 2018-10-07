@@ -11,10 +11,14 @@ module Types
   , isValueFunction
   , TNum(..)
   , VariableAssignment(..)
+  , ComputorStateT
   ) where
 
+import Control.Monad.State.Strict
 import Data.List (find, intercalate)
 import qualified Data.Map as M
+
+type ComputorStateT = StateT ComputorState
 
 {-- AExpr --}
 
@@ -142,7 +146,7 @@ instance Num TNum where
   (TInteger a)   - (TDouble b)    = TDouble ((fromInteger a) - b)
   (TDouble a)    - (TInteger b)   = TDouble (a - (fromInteger b))
   (TDouble a)    - (TDouble b)    = TDouble (a - b)
-  (TInteger a)   - (TComplex b c) = TComplex ((fromInteger a) - b) c
+  (TInteger a)   - (TComplex b c) = TComplex ((fromInteger a) - b) (-c)
   (TComplex a b) - (TInteger c)   = TComplex (a - (fromInteger c)) b
   (TDouble a)    - (TComplex b c) = TComplex (a - b) (-c)
   (TComplex a b) - (TDouble c)    = TComplex (a - c) b

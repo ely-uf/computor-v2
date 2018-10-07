@@ -49,10 +49,10 @@ parseNamedFunctionCall = lexeme $ do
   return $ FunctionCall expr fArgs
 
 parseFunctionDeclArgs :: Parser [String]
-parseFunctionDeclArgs = lexeme . parens $ sepBy identifier (lexeme $ chunk ", ") 
+parseFunctionDeclArgs = lexeme . parens $ sepBy identifier (lexeme $ chunk ",")
 
 parseFunctionArgs :: Parser [VArg]
-parseFunctionArgs = lexeme . parens $ sepBy parseVArg (lexeme $ chunk ", ")
+parseFunctionArgs = lexeme . parens $ sepBy parseVArg (lexeme $ chunk ",")
 
 parseVArg :: Parser VArg
 parseVArg = lexeme $ VArgFunc <$> (try parseAnonymousFunction)
@@ -73,8 +73,8 @@ aOperators =
 aTerm :: Parser AExpr
 aTerm = lexeme $ (try $ parens parseAExpression)
   <|> (try parseFunctionCall)
-  <|> Variable <$> identifier
-  <|> ConstVal <$> (try parseTNum)
+  <|> Variable <$> (try identifier)
+  <|> ConstVal <$> parseTNum
 
 parseAExpression :: Parser AExpr
 parseAExpression = makeExprParser aTerm aOperators
