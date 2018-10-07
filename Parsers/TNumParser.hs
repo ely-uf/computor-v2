@@ -12,5 +12,20 @@ parseComplex = do
   lexeme $ char 'i'
   return $ TComplex 0.0 imaginaryPart
 
+parseMatrix :: Parser TNum
+parseMatrix = squareParens $ do
+  subMatrices <- sepBy (squareParens $ sepBy (lexeme parseTNum') (symbol ",")) (symbol ";")
+  if invalidMatrixDimensions subMatrices then
+    fail $ "Invalid matrix dimensions."
+  else
+    return $ TMatrix $ Matrix (length subMatrices) (length.head $ subMatrices) (concat subMatrices)
+  where
+    squareParens = between (symbol "[") (symbol "]")
+    invalidMatrixDimensions subMatrices = not . (all ((== (colN subMatrices)) . length)) $ subMatrices
+    colN subMatrices = length . head $ subMatrices
+
+parseTNum' :: Parser TNum
+parseTNum' = (try parseComplex) <|> (try $ TDouble <$> double) <|> (TInteger <$> integer)
+
 parseTNum :: Parser TNum
-parseTNum = (try parseComplex) <|> (try $ TDouble <$> double) <|> (TInteger <$> integer)
+parseTNum = (try parseComplex) <|> (try $ TDouble <$> double) <|> (try $ TInteger <$> integer) <|> parseMatrix

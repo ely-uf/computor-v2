@@ -14,15 +14,33 @@ callFunction :: Function -> ComputorState -> Either FunctionError Value
 callFunction (Function _ args expr) st = solveExpression expr (injectArgs args st)
 
 (+?) :: TNum -> TNum -> Either ExpressionError TNum
+m1@(TMatrix (Matrix nc1 nr1 _)) +? m2@(TMatrix (Matrix nc2 nr2 _))
+  | nc1 == nc2 && nr1 == nr2 = return $ m1 + m2
+  | otherwise = Left $ "Type Error: Matrix dimensions mismatch.\n"
+(TMatrix _) +? _ = Left $ "Type Error: Matrix cannot be added to a non-matrix type.\n"
+_ +? (TMatrix _) = Left $ "Type Error: Matrix cannot be added to a non-matrix type.\n"
 a +? b = return $ a + b
 
 (-?) :: TNum -> TNum -> Either ExpressionError TNum
+m1@(TMatrix (Matrix nc1 nr1 _)) -? m2@(TMatrix (Matrix nc2 nr2 _))
+  | nc1 == nc2 && nr1 == nr2 = return $ m1 - m2
+  | otherwise = Left $ "Type Error: Matrix dimensions mismatch.\n"
+(TMatrix _) -? _ = Left $ "Type Error: Matrix cannot subtract a non-matrix type.\n"
+_ -? (TMatrix _) = Left $ "Type Error: Matrix cannot be subtracted from a non-matrix type.\n"
 a -? b = return $ a - b
 
 (*?) :: TNum -> TNum -> Either ExpressionError TNum
+m1@(TMatrix (Matrix nc1 nr1 _)) *? m2@(TMatrix (Matrix nc2 nr2 _))
+  | nc1 == nc2 && nr1 == nr2 = return $ m1 * m2
+  | otherwise = Left $ "Type Error: Matrix dimensions mismatch.\n"
 a *? b = return $ a * b
 
 (/?) :: TNum -> TNum -> Either ExpressionError TNum
+m1@(TMatrix (Matrix nc1 nr1 _)) /? m2@(TMatrix (Matrix nc2 nr2 _))
+  | nc1 == nc2 && nr1 == nr2 = return $ m1 / m2
+  | otherwise = Left $ "Type Error: Matrix dimensions mismatch.\n"
+(TMatrix _) /? _ = Left $ "Type Error: Matrix cannot be divided by a non-matrix type.\n"
+_ /? (TMatrix _) = Left $ "Type Error: Matrix cannot be a divisor for a non-matrix type.\n"
 a /? b = return $ a / b
 
 (^?) :: TNum -> TNum -> Either ExpressionError TNum
