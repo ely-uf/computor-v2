@@ -36,6 +36,11 @@ a %? b = Left $ "Type Error: Trying to modulo " ++ (show a) ++ " and " ++ (show 
 propagateArithmeticError :: AExpr -> ExpressionError -> ExpressionError
 propagateArithmeticError a = ((flip (++)) (("In the expression " ++ (show a)) ++ "\n"))
 
+flattenVArgToValue :: VArg -> ComputorState -> Either ExpressionError Value
+flattenVArgToValue (VArgTNum n) _ = return $ VNum n
+flattenVArgToValue (VArgFunc f) _ = return $ VFunc f
+flattenVArgToValue (VArgAExpr e) st = solveExpression e st
+
 flattenVArgsToValues :: [VArg] -> ComputorState -> Either ExpressionError [Value]
 flattenVArgsToValues [] st = return []
 flattenVArgsToValues ((VArgTNum n):xs) st = (:) <$> (Right $ VNum n) <*> flattenVArgsToValues xs st

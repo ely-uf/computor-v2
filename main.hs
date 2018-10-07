@@ -49,7 +49,11 @@ executeCommand command = do
     executeCommand' (CAssignment assignment) state = do
       case assignVariable' assignment state of
         Left error -> liftIO . displayArithmeticError $ error
-        Right st -> put st
+        Right st -> do
+          case getVariable (key assignment) st of
+            Just v -> liftIO . print $ v
+            Nothing -> liftIO . putStrLn $ "Failed to assign variable. Sorry, dunno why."
+          put st
 
 interactiveConsole :: ComputorStateT IO ()
 interactiveConsole = do
