@@ -54,6 +54,9 @@ a %? b = Left $ "Type Error: Trying to modulo " ++ (show a) ++ " and " ++ (show 
 propagateArithmeticError :: AExpr -> ExpressionError -> ExpressionError
 propagateArithmeticError a = ((flip (++)) (("In the expression " ++ (show a)) ++ "\n"))
 
+propagateFunctionCallError :: Function -> ExpressionError -> ExpressionError
+propagateFunctionCallError f = ((flip (++)) (("In the function call " ++ (show f)) ++ "\n"))
+
 flattenVArgToValue :: VArg -> ComputorState -> Either ExpressionError Value
 flattenVArgToValue (VArgTNum n) _ = return $ VNum n
 flattenVArgToValue (VArgFunc f) _ = return $ VFunc f
@@ -70,7 +73,7 @@ solveExpression (LambdaApplication lambda args) st = do
   flattenedArgs <- flattenVArgsToValues args st
   appliedFn <- applyFunctionArgs lambda flattenedArgs
   if canBeCalled appliedFn then
-    callFunction appliedFn st
+    bimap (propagateFunctionCallError appliedFn) id $ callFunction appliedFn st
   else
     return $ VFunc appliedFn
 

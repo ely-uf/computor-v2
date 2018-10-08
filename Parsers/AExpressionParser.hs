@@ -9,7 +9,8 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 import Control.Monad.Combinators.Expr
 
-import Debug.Trace
+import Data.List (nub)
+import Control.Monad (guard)
 
 import Types
 import Parsers.TNumParser
@@ -20,16 +21,22 @@ parseAnonymousFunction :: Parser Function
 parseAnonymousFunction = lexeme $ do
   argumentsList <- parseFunctionDeclArgs
   lexeme $ chunk "->"
-  functionBody <- parseAExpression
-  return $ Function argumentsList [] functionBody
+  if argumentsList /= nub argumentsList then
+    fail "Function arguments must have unique names."
+  else do
+    functionBody <- parseAExpression
+    return $ Function argumentsList [] functionBody
 
 parseFunctionDeclaration :: Parser (String, Function)
 parseFunctionDeclaration = lexeme $ do
   functionName <- (:) <$> letterChar <*> many alphaNumChar
   argumentsList <- parseFunctionDeclArgs
-  symbol "="
-  functionBody <- parseAExpression
-  return (functionName, Function argumentsList [] functionBody)
+  if argumentsList /= nub argumentsList then
+    fail "Function arguments must have unique names."
+  else do
+    symbol "="
+    functionBody <- parseAExpression
+    return (functionName, Function argumentsList [] functionBody)
 
 parseFunctionCall :: Parser AExpr
 parseFunctionCall = lexeme $

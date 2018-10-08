@@ -167,10 +167,9 @@ instance Num TNum where
   (TDouble a)    * (TComplex b c) = TComplex (a * b) (a * c)
   (TComplex a b) * (TDouble c)    = TComplex (a * c) (b * c)
   (TComplex a b) * (TComplex c d) = TComplex (a * c - b * d) (a * d + b * c)
-  (TMatrix m) * n@(TInteger _) = TMatrix $ fmap (* n) m
-  (TMatrix m) * n@(TDouble _) = TMatrix $ fmap (* n) m
-  (TMatrix m) * n@(TComplex _ _) = TMatrix $ fmap (* n) m
   (TMatrix (Matrix nr nc el1)) * (TMatrix (Matrix _ _ el2)) = TMatrix $ Matrix nr nc (zipWith (*) el1 el2)
+  (TMatrix m) * n = TMatrix $ fmap (* n) m
+  n * (TMatrix m) = TMatrix $ fmap (* n) m
   negate (TInteger a)   = TInteger (negate a)
   negate (TDouble a)    = TDouble (negate a)
   negate (TComplex a b) = TComplex (negate a) (negate b)
