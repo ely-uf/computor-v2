@@ -7,11 +7,11 @@ LOCAL_SRC = ArithmeticExpressionSolver.hs FunctionOperations.hs \
 PARSER_SRC = Parsers/GenericParsers.hs Parsers/TNumParser.hs \
 			 Parsers/AExpressionParser.hs Parsers/VariableAssignmentParser.hs \
 			 Parsers/FunctionParser.hs
-TYPES_SRC = Types/ArithmeticExpression.hs \
-			Types/ComputorState.hs Types/TNum.hs \
-			Types/Value.hs Types/Function.hs
 
-AUX_SRC = $(LOCAL_SRC) $(PARSER_SRC) $(TYPES_SRC)
+OPERATIONS_SRC = Operations/ComputorState.hs Operations/Function.hs Operations/Matrix.hs
+
+
+AUX_SRC = $(LOCAL_SRC) $(PARSER_SRC) $(OPERATIONS_SRC)
 
 OBJ = $(SRC:.hs=.o) $(SRC:.hs=.hi) $(AUX_SRC:.hs=.o) $(AUX_SRC:.hs=.hi)
 

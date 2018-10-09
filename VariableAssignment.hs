@@ -5,7 +5,7 @@ module VariableAssignment
 
 import Types
 import ArithmeticExpressionSolver
-import ComputorStateOperations
+import Operations.ComputorState
 
 assignVariable :: String -> VArg -> ComputorState -> Either String ComputorState
 assignVariable key (VArgTNum n) st = return $ setNumVariable key n st

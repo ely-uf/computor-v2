@@ -1,4 +1,4 @@
-module ComputorStateOperations
+module Operations.ComputorState
   ( initialState
   , getVariable
   , setVariable

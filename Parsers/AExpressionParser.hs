@@ -15,7 +15,7 @@ import Control.Monad (guard)
 import Types
 import Parsers.TNumParser
 import Parsers.GenericParsers
-import FunctionOperations
+import Operations.Function
 
 parseAnonymousFunction :: Parser Function
 parseAnonymousFunction = lexeme $ do
@@ -70,16 +70,23 @@ aOperators :: [[Operator Parser AExpr]]
 aOperators =
   [ [Prefix ( Neg  <$ symbol "-") ]
   , [ InfixL (BinaryExpr Mod <$ symbol "%") ]
-  , [ InfixL (BinaryExpr Pow <$ symbol "^") ]
-  , [ InfixL (BinaryExpr Div   <$ symbol "/") 
+  , [ InfixL (BinaryExpr Pow <$ symbol "^")
+  , InfixL (BinaryExpr Div   <$ symbol "/")
   , InfixL (BinaryExpr Mul   <$ symbol "*") ]
   , [ InfixL (BinaryExpr Add <$ symbol "+")
   , InfixL (BinaryExpr Sub   <$ symbol "-") ]
   ]
 
+parseNumVariableMultiplication :: Parser AExpr
+parseNumVariableMultiplication = lexeme $ do
+  num <- try $ choice [TInteger <$> integer, TDouble <$> double]
+  var <- try identifier
+  return $ BinaryExpr Mul (ConstVal num) (Variable var)
+
 aTerm :: Parser AExpr
 aTerm = lexeme $ (try $ parens parseAExpression)
   <|> (try parseFunctionCall)
+  <|> (try parseNumVariableMultiplication)
   <|> Variable <$> (try identifier)
   <|> ConstVal <$> parseTNum
 

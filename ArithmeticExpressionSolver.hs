@@ -6,8 +6,8 @@ module ArithmeticExpressionSolver
   ) where
 
 import Types
-import FunctionOperations
-import ComputorStateOperations
+import Operations.Function
+import Operations.ComputorState
 import Data.Bifunctor
 
 callFunction :: Function -> ComputorState -> Either FunctionError Value

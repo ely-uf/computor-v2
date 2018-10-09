@@ -1,11 +1,11 @@
-module FunctionOperations 
+module Operations.Function
   ( applyFunctionArgs
   , canBeCalled
   , injectArgs
   ) where
 
 import Types
-import ComputorStateOperations
+import Operations.ComputorState
 import Data.List (intercalate)
 
 tooManyArgumentsError :: Int -> Int -> FunctionError

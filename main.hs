@@ -9,7 +9,7 @@ import Parsers.GenericParsers
 
 import Types
 import ArithmeticExpressionSolver
-import ComputorStateOperations
+import Operations.ComputorState
 import VariableAssignment
 
 import Control.Monad.State.Strict

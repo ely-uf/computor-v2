@@ -1,4 +1,7 @@
-module MatrixOperations where
+module Operations.Matrix
+  ( takeRow
+  , takeCol
+  ) where
 
 import Types
 
