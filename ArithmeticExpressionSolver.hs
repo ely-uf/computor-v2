@@ -44,6 +44,7 @@ _ /? (TMatrix _) = Left $ "Type Error: Matrix cannot be a divisor for a non-matr
 a /? b = return $ a / b
 
 (^?) :: TNum -> TNum -> Either ExpressionError TNum
+(TInteger _) ^? (TInteger 0) = return 1
 (TInteger a) ^? (TInteger b) | b > 0 = return $ TInteger (a ^ b)
 a ^? b = Left $ "Type Error: Trying to raise " ++ (show a) ++ " to the power of " ++ (show b) ++ ".\n"
 
