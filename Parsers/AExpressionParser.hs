@@ -72,6 +72,7 @@ aOperators =
   , [ InfixL (BinaryExpr Mod <$ symbol "%") ]
   , [ InfixL (BinaryExpr Pow <$ symbol "^")
   , InfixL (BinaryExpr Div   <$ symbol "/")
+  , InfixL (BinaryExpr MatrixMul <$ (lexeme $ chunk "**"))
   , InfixL (BinaryExpr Mul   <$ symbol "*") ]
   , [ InfixL (BinaryExpr Add <$ symbol "+")
   , InfixL (BinaryExpr Sub   <$ symbol "-") ]

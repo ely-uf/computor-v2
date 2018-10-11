@@ -8,6 +8,7 @@ module ArithmeticExpressionSolver
 import Types
 import Operations.Function
 import Operations.ComputorState
+import Operations.Matrix
 import Data.Bifunctor
 
 callFunction :: Function -> ComputorState -> Either FunctionError Value
@@ -51,6 +52,12 @@ a ^? b = Left $ "Type Error: Trying to raise " ++ (show a) ++ " to the power of 
 (%?) :: TNum -> TNum -> Either ExpressionError TNum
 (TInteger a) %? (TInteger b) = return $ TInteger (a `mod` b)
 a %? b = Left $ "Type Error: Trying to modulo " ++ (show a) ++ " and " ++ (show b) ++ ".\n"
+
+(**?) :: TNum -> TNum -> Either ExpressionError TNum
+(TMatrix m1) **? (TMatrix m2) = case matrixMultiplication m1 m2 of
+  Just m3 -> return $ TMatrix m3
+  Nothing -> Left $ "Type Error: Matrix dimensions mismatch.\n"
+_ **? _ = Left $ "Type Error: Matrix multiplication may be performed on matrices only.\n"
 
 propagateArithmeticError :: AExpr -> ExpressionError -> ExpressionError
 propagateArithmeticError a = ((flip (++)) (("In the expression " ++ (show a)) ++ "\n"))
@@ -121,4 +128,5 @@ solveExpression' e@(BinaryExpr op a b) st = bimap (propagateArithmeticError e) i
         Mul -> a1 *? b1
         Pow -> a1 ^? b1
         Mod -> a1 %? b1
+        MatrixMul -> a1 **? b1
         a -> error $ "Trying to solve binary operation " ++ (show a)

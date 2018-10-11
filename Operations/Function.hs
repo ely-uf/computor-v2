@@ -9,7 +9,7 @@ import Operations.ComputorState
 import Data.List (intercalate)
 
 tooManyArgumentsError :: Int -> Int -> FunctionError
-tooManyArgumentsError expected applied = "Function Error: Expected " ++ show expected ++ " arguments. But " ++ show applied ++ " applied."
+tooManyArgumentsError expected applied = "Function Error: Expected " ++ show expected ++ " arguments. But " ++ show applied ++ " applied.\n"
 
 canBeCalled :: Function -> Bool
 canBeCalled (Function args appliedArgs _) = length args == length appliedArgs
