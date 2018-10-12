@@ -6,6 +6,7 @@ module Builtins
 import Types
 import Data.List (find)
 import Data.Map (toList)
+import System.Exit (exitSuccess)
 import Control.Monad.State.Strict (get, put, liftIO)
 
 builtinNames :: [String]
@@ -15,6 +16,7 @@ builtinCommands :: [(String, ComputorStateT IO ())]
 builtinCommands =
   [ ("dump", dumpB)
   , ("help", helpB)
+  , ("exit", exitB)
   ]
 
 dumpB :: ComputorStateT IO ()
@@ -61,7 +63,11 @@ helpB = liftIO $ do
   putStrLn "Builtins:"
   putStrLn "\t@help -> Display help."
   putStrLn "\t@dump -> Dump variables."
+  putStrLn "\t@exit -> Exit the program."
   putStrLn ""
+
+exitB :: ComputorStateT IO ()
+exitB = liftIO exitSuccess
 
 executeBuiltin :: String -> ComputorStateT IO ()
 executeBuiltin name = case find ((== name).fst) builtinCommands of
