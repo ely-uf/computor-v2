@@ -13,6 +13,7 @@ tooManyArgumentsError expected applied = "Function Error: Expected " ++ show exp
 
 canBeCalled :: Function -> Bool
 canBeCalled (Function args appliedArgs _) = length args == length appliedArgs
+canBeCalled (BuiltinFunction _ args appliedArgs _) = length args == length appliedArgs
 
 injectArgs :: [(String, Value)] -> ComputorState -> ComputorState
 injectArgs [] state = state 
@@ -22,6 +23,14 @@ applyFunctionArgs :: Function -> [Value] -> Either String Function
 applyFunctionArgs (Function args appliedArgs body) newArgs
   | expectedArgumentsN < newArgumentsN = Left $ tooManyArgumentsError expectedArgumentsN newArgumentsN
   | otherwise = return $ Function args extendedAppliedArguments body
+  where expectedArgumentsN = length args - appliedArgumentsN
+        appliedArgumentsN  = length appliedArgs
+        newArgumentsN      = length newArgs
+        extendedAppliedArguments = appliedArgs ++ zip (drop appliedArgumentsN args) newArgs
+
+applyFunctionArgs (BuiltinFunction name args appliedArgs fn) newArgs
+  | expectedArgumentsN < newArgumentsN = Left $ tooManyArgumentsError expectedArgumentsN newArgumentsN
+  | otherwise = return $ BuiltinFunction name args extendedAppliedArguments fn
   where expectedArgumentsN = length args - appliedArgumentsN
         appliedArgumentsN  = length appliedArgs
         newArgumentsN      = length newArgs

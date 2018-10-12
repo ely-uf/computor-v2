@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiWayIf #-}
 
-module ArithmeticExpressionSolver
+module Operations.ArithmeticExpression
   ( ExpressionError
   , solveExpression
   ) where
@@ -13,6 +13,7 @@ import Data.Bifunctor
 
 callFunction :: Function -> ComputorState -> Either FunctionError Value
 callFunction (Function _ args expr) st = solveExpression expr (injectArgs args st)
+callFunction (BuiltinFunction _ _ args fn) st = fn args (injectArgs args st)
 
 (+?) :: TNum -> TNum -> Either ExpressionError TNum
 m1@(TMatrix (Matrix nc1 nr1 _)) +? m2@(TMatrix (Matrix nc2 nr2 _))
@@ -129,4 +130,3 @@ solveExpression' e@(BinaryExpr op a b) st = bimap (propagateArithmeticError e) i
         Pow -> a1 ^? b1
         Mod -> a1 %? b1
         MatrixMul -> a1 **? b1
-        a -> error $ "Trying to solve binary operation " ++ (show a)

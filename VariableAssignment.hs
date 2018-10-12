@@ -4,7 +4,7 @@ module VariableAssignment
   ) where
 
 import Types
-import ArithmeticExpressionSolver
+import Operations.ArithmeticExpression
 import Operations.ComputorState
 
 assignVariable :: String -> VArg -> ComputorState -> Either String ComputorState

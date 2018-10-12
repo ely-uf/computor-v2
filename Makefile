@@ -1,14 +1,16 @@
 NAME = computor-v2
 SRC = main.hs
 
-LOCAL_SRC = ArithmeticExpressionSolver.hs FunctionOperations.hs \
-			ComputorStateOperations.hs VariableAssignment.hs	\
-			Types.hs PredefinedFunctions.hs MatrixOperations.hs
+LOCAL_SRC = VariableAssignment.hs Types.hs \
+			PredefinedFunctions.hs ComputorCommand.hs
+
 PARSER_SRC = Parsers/GenericParsers.hs Parsers/TNumParser.hs \
 			 Parsers/AExpressionParser.hs Parsers/VariableAssignmentParser.hs \
-			 Parsers/FunctionParser.hs
+			 Parsers/FunctionParser.hs Parsers/EquationParser.hs
 
-OPERATIONS_SRC = Operations/ComputorState.hs Operations/Function.hs Operations/Matrix.hs
+OPERATIONS_SRC = Operations/ComputorState.hs Operations/Function.hs \
+				 Operations/Matrix.hs Operations/Equation.hs		\
+				 Operations/ArithmeticExpression.hs
 
 
 AUX_SRC = $(LOCAL_SRC) $(PARSER_SRC) $(OPERATIONS_SRC)

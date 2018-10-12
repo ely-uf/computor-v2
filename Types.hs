@@ -15,6 +15,20 @@ module Types
   , VariableAssignment(..)
   , ComputorStateT
   , Matrix(..)
+  , TSign(..)
+  , ETNum(..)
+  , Term(..)
+  , Equation(..)
+  , QuadraticEquation(..)
+  , Solution(..)
+  , termListToString
+  , isNegativeTerm
+  , isZeroTerm
+  , getTermPower
+  , getTermCoefficient
+  , tnumToDouble
+  , quadraticDiscriminant
+  , quadraticCoefficients
   ) where
 
 import Control.Monad.State.Strict
@@ -73,10 +87,17 @@ instance Show ComputorState where
 
 {-- Function --}
 
-data Function = Function
+data Function
+  = Function
   { args        :: [String]
   , appliedArgs :: [(String, Value)]
   , body        :: AExpr
+  }
+  | BuiltinFunction
+  { bName        :: String
+  , bArgs        :: [String]
+  , bAppliedArgs :: [(String, Value)]
+  , bHandler     :: [(String, Value)] -> ComputorState -> Either FunctionError Value
   }
 
 data VArg
@@ -87,12 +108,16 @@ data VArg
 type FunctionError = String
 
 instance Show Function where
+  show (BuiltinFunction _name _args [] _body) = _name ++ "(" ++ intercalate ", " _args ++ ") -> [native code]"
+  show (BuiltinFunction _name _args _appliedArgs _body) = show (BuiltinFunction _name (substituteArgs _args _appliedArgs) [] _body)
   show (Function _args [] _body) = '(': intercalate ", " _args ++ ") -> " ++ show _body
-  show (Function _args _appliedArgs _body) = show (Function substitutedArgs [] _body)
-    where substitutedArgs = map substitute _args
-          substitute arg = case find ((== arg).fst) _appliedArgs of
-                              Nothing     -> arg
-                              Just (_, v) -> arg ++ ": " ++ show v
+  show (Function _args _appliedArgs _body) = show (Function (substituteArgs _args _appliedArgs) [] _body)
+
+substituteArgs :: [String] -> [(String, Value)] -> [String]
+substituteArgs args appliedArgs = map substitute args
+  where substitute arg = case find ((== arg).fst) appliedArgs of
+                            Nothing     -> arg
+                            Just (_, v) -> arg ++ ": " ++ show v
 
 instance Show VArg where
   show (VArgAExpr e) = show e
@@ -224,3 +249,130 @@ group _ [] = []
 group n l
   | n > 0 = (take n l) : (group n (drop n l))
   | otherwise = error "Negative n"
+
+{- EQUATIONS.   -}
+{- WARNING!     -}
+{- LEGACY CODE! -}
+{-              -}
+
+data Equation = Equation
+  { lhs :: [Term]
+  , rhs :: [Term]
+  } deriving (Eq)
+
+data Solution = NoSolutions
+  | AnySolution
+  | SingleSolution ETNum
+  | MultipleSolutions [ETNum]
+
+data QuadraticEquation = QuadraticEquation Term Term Term
+
+data Term = Term ETNum ETNum deriving (Eq)
+data TSign = TPlus | TMinus deriving (Show, Eq)
+data ETNum = ETDouble Double | ETInt Integer | ETComplex Double Double deriving (Eq)
+
+instance Show (ETNum) where
+  show (ETDouble d)    = show d
+  show (ETInt i)       = show i
+  show (ETComplex 0 0) = show 0
+  show (ETComplex 0 1) = "i"
+  show (ETComplex r 0) = (show r)
+  show (ETComplex 0 i) = (show i) ++ "i"
+  show (ETComplex r 1) = (show r) ++ " + i"
+  show (ETComplex r (-1))      = (show r) ++ " - i"
+  show (ETComplex r i) | i < 0 = (show r) ++ " - " ++ (show.negate $ i) ++ "i"
+  show (ETComplex r i)         = (show r) ++ " + " ++ (show i) ++ "i"
+
+instance Show (Term) where
+  show (Term (ETInt 0) _)      = "0"
+  show (Term (ETDouble 0.0) _) = "0"
+  show (Term x (ETInt 0))      = show x
+  show (Term x (ETDouble 0))   = show x
+  show (Term (ETInt 1) (ETInt 1))       = "x"
+  show (Term (ETDouble 1) (ETInt 1))    = "x"
+  show (Term (ETInt 1) (ETDouble 1))    = "x"
+  show (Term (ETDouble 1) (ETDouble 1)) = "x"
+  show (Term (ETInt (-1)) (ETInt 1))       = "-x"
+  show (Term (ETDouble (-1)) (ETInt 1))    = "-x"
+  show (Term (ETInt (-1)) (ETDouble 1))    = "-x"
+  show (Term (ETDouble (-1)) (ETDouble 1)) = "-x"
+  show (Term x (ETInt 1))      = (show x) ++ "*x"
+  show (Term x (ETDouble 1.0)) = (show x) ++ "*x"
+  show (Term (ETInt 1) y)      = "x^" ++ (show y)
+  show (Term (ETDouble 1.0) y) = "x^" ++ (show y)
+  show (Term (ETInt (-1)) y)      = "-x^" ++ (show y)
+  show (Term (ETDouble (-1.0)) y) = "-x^" ++ (show y)
+  show (Term x y)             = (show x) ++ "*x^" ++ (show y)
+
+instance Num (ETNum) where
+  (ETInt x) + (ETInt y)       = ETInt (x + y)
+  (ETInt x) + (ETDouble y)    = ETDouble ((fromIntegral x) + y)
+  (ETDouble x) + (ETInt y)    = ETDouble (x + (fromIntegral y))
+  (ETDouble x) + (ETDouble y) = ETDouble (x + y)
+  (ETInt x) - (ETInt y)       = ETInt (x - y)
+  (ETInt x) - (ETDouble y)    = ETDouble ((fromIntegral x) - y)
+  (ETDouble x) - (ETInt y)    = ETDouble (x - (fromIntegral y))
+  (ETDouble x) - (ETDouble y) = ETDouble (x - y)
+  (ETInt x) * (ETInt y)       = ETInt (x * y)
+  (ETInt x) * (ETDouble y)    = ETDouble ((fromIntegral x) * y)
+  (ETDouble x) * (ETInt y)    = ETDouble (x * (fromIntegral y))
+  (ETDouble x) * (ETDouble y) = ETDouble (x * y)
+  negate (ETInt x)     = ETInt (negate x)
+  negate (ETDouble x)  = ETDouble (negate x)
+  abs (ETInt x)        = ETInt (abs x)
+  abs (ETDouble x)     = ETDouble (abs x)
+  signum (ETInt x)     = ETInt (signum x)
+  signum (ETDouble x)  = ETDouble (signum x)
+  fromInteger x       = ETInt (fromIntegral x)
+
+instance Num (Term) where
+  (Term x y) + (Term x1 y1) | y == y1 = (Term (x + x1) y)
+  (Term x y) + (Term x1 y1) = error "Cannot add terms with different powers."
+  (Term x y) - (Term x1 y1) | y == y1 = (Term (x - x1) y)
+  (Term x y) - (Term x1 y1) = error "Cannot subtract terms with different powers."
+  (Term x y) * (Term x1 y1) = (Term (x * x1) (y + y1))
+  negate (Term x y) = (Term (negate x) y)
+  abs (Term x y)    = (Term (abs x) y)
+  signum (Term x y) = (Term (signum x) y)
+  fromInteger x     = (Term (fromIntegral x) (ETInt 0))
+
+instance Show (Equation) where
+  show (Equation lhs rhs) = (termListToString lhs) ++ " = " ++ (termListToString rhs)
+
+instance Show (QuadraticEquation) where
+  show (QuadraticEquation a b c) = (termListToString [a, b, c]) ++ " = 0"
+
+termListToString :: [Term] -> String
+termListToString []         = ""
+termListToString (x:xs:xss) = (show x) ++ " + " ++ (termListToString (xs:xss))
+termListToString (x:[])     = show x
+
+isNegativeTerm :: Term -> Bool
+isNegativeTerm (Term (ETInt x) _)    = x < 0
+isNegativeTerm (Term (ETDouble x) _) = x < 0.0
+
+isZeroTerm :: Term -> Bool
+isZeroTerm (Term (ETInt 0) _) = True
+isZeroTerm (Term (ETDouble 0.0) _) = True
+isZeroTerm _ = False
+
+getTermPower :: Term -> Integer
+getTermPower (Term _ (ETInt x)) = x
+
+getTermCoefficient :: Term -> Double
+getTermCoefficient (Term (ETInt x) _) = fromIntegral x
+getTermCoefficient (Term (ETDouble x) _) = x
+
+tnumToDouble :: ETNum -> Double
+tnumToDouble (ETDouble x) = x
+tnumToDouble (ETInt x)    = fromIntegral x
+
+quadraticDiscriminant :: QuadraticEquation -> Double
+quadraticDiscriminant (QuadraticEquation (Term a _) (Term b _) (Term c _)) = tnumToDouble $ (b * b) - 4 * a * c
+
+quadraticCoefficients :: QuadraticEquation -> (Double, Double, Double)
+quadraticCoefficients (QuadraticEquation a b c) = (
+  getTermCoefficient a,
+  getTermCoefficient b,
+  getTermCoefficient c)
+
