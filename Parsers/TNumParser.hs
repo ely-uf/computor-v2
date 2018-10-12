@@ -18,11 +18,11 @@ parseMatrix = squareParens $ do
   if invalidMatrixDimensions subMatrices then
     fail $ "Invalid matrix dimensions."
   else
-    return $ TMatrix $ Matrix (length subMatrices) (length.head $ subMatrices) (concat subMatrices)
+    return $ TMatrix $ Matrix (length subMatrices) (colN subMatrices) (concat subMatrices)
   where
     squareParens = between (symbol "[") (symbol "]")
     invalidMatrixDimensions subMatrices = not . (all ((== (colN subMatrices)) . length)) $ subMatrices
-    colN subMatrices = length . head $ subMatrices
+    colN subMatrices = if length subMatrices == 0 then 0 else length . head $ subMatrices
 
 parseTNum' :: Parser TNum
 parseTNum' = (try parseComplex) <|> (try $ TDouble <$> double) <|> (TInteger <$> integer)
