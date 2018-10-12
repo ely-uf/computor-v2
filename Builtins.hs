@@ -25,7 +25,6 @@ dumpB = do
     printVariable :: (Show a, Show b) => (a, b) -> IO ()
     printVariable (key, val) = putStrLn $ show key ++ " = " ++ show val
 
-
 helpB :: ComputorStateT IO ()
 helpB = liftIO $ do
   putStrLn "============ Computor V2 ============"

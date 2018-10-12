@@ -14,7 +14,7 @@ import Parsers.BuiltinParser
 parseComputorCommand :: Parser ComputorCommand
 parseComputorCommand
   =   (CAssignment <$> (try parseVariableAssignment))
-  <|> (CBuiltin <$> (try parseBuiltin))
+  <|> (CBuiltin <$> parseBuiltin)
   <|> (CEquation <$> (try parseEquation <* (optional $ symbol "=" >> symbol "?")))
   <|> (CAExpr <$> (parseAExpression <* (optional $ symbol "=" >> symbol "?")))
   <|> (return CNothing)
