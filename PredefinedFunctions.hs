@@ -32,6 +32,27 @@ falseF = Function {
   body = Variable "false"
 }
 
+andF :: Function
+andF = Function {
+  args = ["b1", "b2"],
+  appliedArgs = [],
+  body = FunctionCall (Variable "b1") $ VArgAExpr <$> [ Variable "b2", Variable "b1" ]
+}
+
+orF :: Function
+orF = Function {
+  args = ["b1", "b2"],
+  appliedArgs = [],
+  body = FunctionCall (Variable "b1") $ VArgAExpr <$> [ Variable "b1", Variable "b2" ]
+}
+
+notF :: Function
+notF = Function {
+  args = ["b"],
+  appliedArgs = [],
+  body = FunctionCall (Variable "b") $ VArgAExpr <$> [ Variable "false", Variable "true" ]
+}
+
 ifF :: Function
 ifF = Function {
   args = ["cond", "then", "else"],
@@ -46,4 +67,7 @@ predefinedFunctions =
   , ("true", trueF)
   , ("false", falseF)
   , ("if", ifF)
+  , ("and", andF)
+  , ("or", orF)
+  , ("not", notF)
   ]
