@@ -26,7 +26,7 @@ data ComputorCommand
 parseComputorCommand :: Parser ComputorCommand
 parseComputorCommand
   =   (CAssignment <$> (try parseVariableAssignment))
-  <|> (CAExpr <$> parseAExpression)
+  <|> (CAExpr <$> (parseAExpression <* (optional $ symbol "=" >> symbol "?")))
   <|> (return CNothing)
 
 computorParser :: Parser ComputorCommand
