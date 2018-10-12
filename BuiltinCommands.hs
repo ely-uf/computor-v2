@@ -1,3 +1,0 @@
-module BuiltinCommands
-  ( builtinCommandNames
-  )
