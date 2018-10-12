@@ -5,14 +5,9 @@ module ComputorCommand
   ) where
 
 import Types
-
-import Text.Megaparsec
-import Parsers.GenericParsers
-import Parsers.AExpressionParser
-import Parsers.EquationParser
-import Parsers.VariableAssignmentParser
-
+import Builtins
 import VariableAssignment
+
 import Operations.Equation
 import Operations.ComputorState
 import Operations.ArithmeticExpression
@@ -21,19 +16,7 @@ import Data.Bifunctor
 import Control.Monad.Combinators
 import Control.Monad.State.Strict
 
-data ComputorCommand
-  = CAssignment VariableAssignment
-  | CEquation Equation
-  | CAExpr AExpr
-  | CVarQuery String
-  | CNothing
-
-parseComputorCommand :: Parser ComputorCommand
-parseComputorCommand
-  =   (CAssignment <$> (try parseVariableAssignment))
-  <|> (CEquation <$> (try parseEquation <* (optional $ symbol "=" >> symbol "?")))
-  <|> (CAExpr <$> (parseAExpression <* (optional $ symbol "=" >> symbol "?")))
-  <|> (return CNothing)
+import Parsers.ComputorCommandParser
 
 formatArithmeticError :: String -> String
 formatArithmeticError = unlines . (map indentLog) . (zip [0 .. ]) . lines
@@ -48,6 +31,7 @@ executeCommand command = do
   executeCommand' command st
   where
     executeCommand' :: ComputorCommand -> ComputorState -> ComputorStateT IO ()
+    executeCommand' (CBuiltin builtin) _ = executeBuiltin builtin
     executeCommand' (CAExpr expr) state = either (liftIO . displayArithmeticError) (liftIO.print) $ solveExpression expr state
     executeCommand' (CEquation eq) state = liftIO (solveEquation eq) >> return ()
     executeCommand' (CAssignment assignment) state = do

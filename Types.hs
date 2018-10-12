@@ -1,7 +1,8 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 module Types
-  ( AExpr(..)
+  ( ComputorCommand(..)
+  , AExpr(..)
   , BinaryOperation(..)
   , ExpressionError
   , ComputorState(..)
@@ -36,6 +37,14 @@ import Data.List (find, intercalate)
 import qualified Data.Map as M
 
 type ComputorStateT = StateT ComputorState
+
+data ComputorCommand
+  = CAssignment VariableAssignment
+  | CEquation Equation
+  | CAExpr AExpr
+  | CVarQuery String
+  | CBuiltin String
+  | CNothing
 
 {-- AExpr --}
 
