@@ -56,7 +56,14 @@ interactiveConsole' = do
                 interactiveConsole'
 
 main :: IO ()
-main = evalStateT (runInputT inputTSettings inputTRoutine) initialState
-  where
-    inputTRoutine = withInterrupt . (handle interruptHandler) $ interactiveConsole'
-    interruptHandler Interrupt = lift . liftIO $ exitSuccess
+main = do
+  putStrLn " --------------------------------"
+  putStrLn " |                              |"
+  putStrLn " |    Welcome to Computor-V2!   |"
+  putStrLn " | Type in @help for more info. |"
+  putStrLn " |                              |"
+  putStrLn " --------------------------------"
+  evalStateT (runInputT inputTSettings inputTRoutine) initialState
+    where
+      inputTRoutine = withInterrupt . (handle interruptHandler) $ interactiveConsole'
+      interruptHandler Interrupt = lift . liftIO $ exitSuccess
