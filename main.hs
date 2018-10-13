@@ -10,6 +10,7 @@ import Operations.ComputorState
 
 import Control.Monad.State.Strict
 import System.Console.Haskeline
+import System.Console.Haskeline.Completion
 import System.IO (hFlush, hIsEOF, stdout, stdin)
 import System.Exit (exitSuccess)
 
@@ -36,6 +37,11 @@ interactiveConsole = do
         getLine
 -}
 
+inputTSettings = Settings {
+  complete = noCompletion,
+  historyFile = Nothing,
+  autoAddHistory = True
+}
 
 interactiveConsole' :: InputT (ComputorStateT IO) ()
 interactiveConsole' = do
@@ -50,7 +56,7 @@ interactiveConsole' = do
                 interactiveConsole'
 
 main :: IO ()
-main = evalStateT (runInputT defaultSettings inputTRoutine) initialState
+main = evalStateT (runInputT inputTSettings inputTRoutine) initialState
   where
     inputTRoutine = withInterrupt . (handle interruptHandler) $ interactiveConsole'
     interruptHandler Interrupt = lift . liftIO $ exitSuccess
