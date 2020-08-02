@@ -65,5 +65,5 @@ main = do
   putStrLn " --------------------------------"
   evalStateT (runInputT inputTSettings inputTRoutine) initialState
     where
-      inputTRoutine = withInterrupt . (handle interruptHandler) $ interactiveConsole'
-      interruptHandler Interrupt = lift . liftIO $ exitSuccess
+      inputTRoutine = withInterrupt . (handleInterrupt interruptHandler) $ interactiveConsole'
+      interruptHandler = lift . liftIO $ exitSuccess

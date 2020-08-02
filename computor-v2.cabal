@@ -1,0 +1,44 @@
+cabal-version:       >=1.10
+
+name:                computor-v2
+version:             0.1.0.0
+synopsis:            A functional-oriented arithmetic expression interpreter with the support of anonymous, higher order and curried functions. 
+-- description:
+bug-reports:         https://github.com/ely-uf/computor-v2
+-- license:
+license-file:        LICENSE
+author:              ely-uf
+maintainer:          ely-uf@protonmail.com
+-- copyright:
+category:            Language
+build-type:          Simple
+-- extra-source-files:
+
+executable computor-v2
+  main-is:             Main.hs
+  other-modules:       Builtins,
+                       ComputorCommand,
+                       Operations.ArithmeticExpression,
+                       Operations.ComputorState,
+                       Operations.Equation,
+                       Operations.Function,
+                       Operations.Matrix,
+                       Parsers.AExpressionParser,
+                       Parsers.BuiltinParser,
+                       Parsers.ComputorCommandParser,
+                       Parsers.EquationParser,
+                       Parsers.GenericParsers,
+                       Parsers.TNumParser,
+                       Parsers.VariableAssignmentParser,
+                       PredefinedFunctions,
+                       Types,
+                       VariableAssignment
+  -- other-extensions:
+  build-depends:       base >=4.14 && <4.15,
+                       containers == 0.6.2.1,
+                       haskeline == 0.8.0.0,
+                       megaparsec == 8.0.0,
+                       mtl == 2.2.2,
+                       parser-combinators == 1.2.1
+  -- hs-source-dirs:
+  default-language:    Haskell2010
